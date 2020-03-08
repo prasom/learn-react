@@ -43,12 +43,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingLeft: 10,
     marginTop: 6,
-    borderColor: 'green',
-    borderBottomWidth: 1,
     fontSize: 17,
     fontWeight: 'bold',
     color: 'black',
-    fontStyle: 'normal',
   },
   verticalLine: {
     borderBottomColor: 'green',
@@ -56,7 +53,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     width: '100%',
     position: 'absolute',
-    marginTop: 15,
+    marginTop: 18,
     fontWeight: 'bold',
   },
 });
