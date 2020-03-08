@@ -1,58 +1,111 @@
-import * as React from 'react';
-import {View, Text, Button} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import React, {useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import TodoList from './pages/TodoList';
 
-function HomeScreen({navigation}) {
+interface ITodo {
+  key: number;
+  text: string;
+  value: string;
+  checked: boolean;
+}
+
+const App = () => {
+  const [value, setValue] = useState('');
+  const [todos, setTodos]: [ITodo[], any] = useState([]);
+
+  const addTodo = () => {
+    if (value.length > 0) {
+      setTodos([...todos, {text: value, key: Date.now(), checked: false}]);
+      setValue('');
+    }
+  };
+
+  const checkTodo = (id: number) => {
+    setTodos(
+      todos.map(todo => {
+        if (todo.key === id) todo.checked = !todo.checked;
+        return todo;
+      }),
+    );
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(
+      todos.filter(todo => {
+        if (todo.key !== id) return true;
+      }),
+    );
+  };
+
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{fontSize: 30}}>This is the home screen!</Text>
-      <Button
-        onPress={() => navigation.navigate('MyModal')}
-        title="Open Modal"
-      />
+    <View style={styles.container}>
+      <Text style={styles.header}>Todo List</Text>
+      <View style={styles.textInputContainer}>
+        <TextInput
+          style={styles.textInput}
+          multiline={true}
+          placeholder="What do you want to do today?"
+          placeholderTextColor="#ccc"
+          value={value}
+          onChangeText={value => setValue(value)}
+        />
+        <TouchableOpacity onPress={() => addTodo()}>
+          <Icon name="plus" size={30} color="blue" style={{marginLeft: 15}} />
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={{width: '100%'}}>
+        {todos.map(item => (
+          <TodoList
+            text={item.text}
+            key={item.key}
+            checked={item.checked}
+            setChecked={() => checkTodo(item.key)}
+            deleteTodo={() => deleteTodo(item.key)}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
-}
-
-function ModalScreen({navigation}) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{fontSize: 30}}>This is a modal!</Text>
-      <Button onPress={() => navigation.goBack()} title="Dismiss" />
-    </View>
-  );
-}
-
-function DetailsScreen() {
-  return (
-    <View>
-      <Text>Details</Text>
-    </View>
-  );
-}
-
-const MainStack = createStackNavigator();
-const RootStack = createStackNavigator();
-
-function MainStackScreen() {
-  return (
-    <MainStack.Navigator>
-      <MainStack.Screen name="Home" component={HomeScreen} />
-      <MainStack.Screen name="Details" component={DetailsScreen} />
-    </MainStack.Navigator>
-  );
-}
-
-function App() {
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator mode="modal" headerMode="none">
-        <RootStack.Screen name="Main" component={MainStackScreen} />
-        <RootStack.Screen name="MyModal" component={ModalScreen} />
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
-}
+};
 
 export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  header: {
+    marginTop: '15%',
+    fontSize: 20,
+    color: 'red',
+    paddingBottom: 10,
+  },
+  textInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    borderColor: 'black',
+    borderBottomWidth: 1,
+    paddingRight: 10,
+    paddingBottom: 10,
+  },
+  textInput: {
+    flex: 1,
+    height: 'auto',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    paddingLeft: 10,
+    minHeight: '3%',
+  },
+});
